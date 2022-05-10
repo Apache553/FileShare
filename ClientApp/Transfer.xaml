@@ -1,0 +1,34 @@
+﻿<Window x:Class="ClientApp.Transfer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClientApp"
+        mc:Ignorable="d"
+        Title="Transfer" Height="240" Width="480"
+        ResizeMode="NoResize"
+        Loaded="Transfer_OnLoaded"
+        Closing="Transfer_OnClosing"
+        WindowStartupLocation="CenterOwner">
+    <Window.CommandBindings>
+        <CommandBinding Command="local:TransferCommand.Cancel" Executed="CancelCommand"/>
+    </Window.CommandBindings>
+    <DockPanel Margin="8">
+        <DockPanel DockPanel.Dock="Bottom" Margin="3">
+            <Button DockPanel.Dock="Right" Padding="3" x:Name="CancelButton" Command="local:TransferCommand.Cancel">Cancel</Button>
+            <TextBlock/>
+        </DockPanel>
+        <ProgressBar x:Name="TotalProgressBar" Height="20" Margin="3" DockPanel.Dock="Bottom"/>
+        <Grid DockPanel.Dock="Bottom">
+            <Label>Total Progress:</Label>
+            <Label HorizontalAlignment="Right" x:Name="TotalProgressLabel">0/0</Label>
+        </Grid>
+        <ProgressBar x:Name="FileProgressBar" Height="20" Margin="3" DockPanel.Dock="Bottom"/>
+        <Grid DockPanel.Dock="Bottom">
+            <Label>Item Progress:</Label>
+            <Label HorizontalAlignment="Right" x:Name="ItemProgressLabel">0/0 0B/s</Label>
+        </Grid>
+        <Label>Transferring:</Label>
+        <TextBlock TextWrapping="Wrap" FontSize="10" Margin="0,7,0,0" x:Name="Filename">FILENAME</TextBlock>
+    </DockPanel>
+</Window>

@@ -1,0 +1,93 @@
+﻿<Window x:Class="ClientApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClientApp"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen"
+        Closing="MainWindow_OnClosing">
+    <Window.Resources>
+        <local:IsDirectoryConverter x:Key="IsDirectoryConverter" />
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="local:MainCommand.Connect" Executed="ConnectCommand" />
+        <CommandBinding Command="local:MainCommand.Disconnect" Executed="DisconnectCommand" />
+        <CommandBinding Command="local:MainCommand.GoParentDirectory" Executed="GoParentDirectoryCommand" />
+        <CommandBinding Command="local:MainCommand.ChangeDirectory" Executed="ChangeDirectoryCommand" />
+        <CommandBinding Command="local:MainCommand.Refresh" Executed="RefreshCommand" />
+        <CommandBinding Command="local:MainCommand.Delete" Executed="DeleteCommand" />
+        <CommandBinding Command="local:MainCommand.Download" Executed="DownloadCommand" />
+        <CommandBinding Command="local:MainCommand.Upload" Executed="UploadCommand" />
+        <CommandBinding Command="local:MainCommand.NewDirectory" Executed="NewDirectoryCommand" />
+        <CommandBinding Command="local:MainCommand.Rename" Executed="RenameCommand" />
+        
+    </Window.CommandBindings>
+    <DockPanel LastChildFill="True">
+        <DockPanel Height="32" VerticalAlignment="Top" Margin="3" DockPanel.Dock="Top">
+            <Button Margin="3" Command="local:MainCommand.Connect">Connect</Button>
+            <Button Margin="3" Command="local:MainCommand.Disconnect">Disconnect</Button>
+            <Button Margin="3" Command="local:MainCommand.Refresh"
+                    IsEnabled="{Binding ConnectedStatus,UpdateSourceTrigger=PropertyChanged}">
+                🔁
+            </Button>
+            <Button Margin="3" Command="local:MainCommand.GoParentDirectory" Width="20"
+                    IsEnabled="{Binding ConnectedStatus,UpdateSourceTrigger=PropertyChanged}">
+                ↑
+            </Button>
+            <Label Margin="3" x:Name="ConnectionStatusLabel" MinWidth="20" DockPanel.Dock="Right"
+                   VerticalContentAlignment="Center" HorizontalContentAlignment="Center">
+                <Label.Style>
+                    <Style TargetType="Label">
+                        <Setter Property="Content" Value="❌" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ConnectedStatus,UpdateSourceTrigger=PropertyChanged}"
+                                         Value="True">
+                                <Setter Property="Content" Value="✅" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Label.Style>
+            </Label>
+            <TextBox x:Name="RemotePath" Margin="3"
+                     Text="{Binding RemotePathText,UpdateSourceTrigger=PropertyChanged}"
+                     VerticalContentAlignment="Center"
+                     IsEnabled="{Binding ConnectedStatus,UpdateSourceTrigger=PropertyChanged}">
+                <TextBox.InputBindings>
+                    <KeyBinding Key="Return" Command="local:MainCommand.ChangeDirectory" />
+                </TextBox.InputBindings>
+            </TextBox>
+        </DockPanel>
+        <Separator DockPanel.Dock="Top" />
+        <ListView x:Name="RemoteView" Margin="3"
+                  QueryContinueDrag="RemoteView_QueryContinueDrag"
+                  GiveFeedback="RemoteView_GiveFeedback"
+                  MouseMove="RemoteView_MouseMove"
+                  PreviewMouseLeftButtonDown="RemoteView_PreviewMouseLeftButtonDown"
+                  MouseDoubleClick="RemoteView_MouseDoubleClick"
+                  Drop="RemoteView_OnDrop"
+                  AllowDrop="True"
+                  IsEnabled="{Binding ConnectedStatus,UpdateSourceTrigger=PropertyChanged}"
+                  SelectionMode="Extended"
+                  ContextMenuOpening="RemoteView_OnContextMenuOpening">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name" Width="360" DisplayMemberBinding="{Binding Path=Path}" />
+                    <GridViewColumn Header="Type" Width="70"
+                                    DisplayMemberBinding="{Binding Path=IsDirectory, Converter={StaticResource IsDirectoryConverter}}" />
+                </GridView>
+            </ListView.View>
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="New Directory" Command="local:MainCommand.NewDirectory"/>
+                    <MenuItem Header="Rename" Command="local:MainCommand.Rename" x:Name="RenameMenuItem"/>
+                    <MenuItem Header="Delete" Command="local:MainCommand.Delete"/>
+                    <Separator/>
+                    <MenuItem Header="Download" Command="local:MainCommand.Download" x:Name="DownloadMenuItem" />
+                    <MenuItem Header="Upload" Command="local:MainCommand.Upload"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
+        </ListView>
+    </DockPanel>
+</Window>
